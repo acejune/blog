@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noodp" />
+    <title>[논문] The PageRank Citation Ranking: Bringing Order to the Web - june.log</title><meta name="Description" content="June&#39;s Tech Blog"><meta property="og:title" content="[논문] The PageRank Citation Ranking: Bringing Order to the Web" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://acejune.github.io/blog/paper-pagerank/" /><meta property="og:image" content="https://acejune.github.io/images/profile.jpeg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-03-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-03-01T00:00:00+00:00" /><meta property="og:site_name" content="june.log" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://acejune.github.io/images/profile.jpeg"/>
+
+<meta name="twitter:title" content="[논문] The PageRank Citation Ranking: Bringing Order to the Web"/>
+<meta name="twitter:description" content=""/>
+<meta name="application-name" content="june.log">
+<meta name="apple-mobile-web-app-title" content="june.log">
+
+<meta name="theme-color" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" href="https://acejune.github.io/blog/paper-pagerank/" /><link rel="stylesheet" href="/blog/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/blog/css/color.css"><link rel="stylesheet" href="/blog/css/style.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/blog/lib/fontawesome-free/all.min.css">
+        <noscript><link rel="stylesheet" href="/blog/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/blog/lib/animate/animate.min.css">
+        <noscript><link rel="stylesheet" href="/blog/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "[논문] The PageRank Citation Ranking: Bringing Order to the Web",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/acejune.github.io\/blog\/paper-pagerank\/"
+        },"image": ["https:\/\/acejune.github.io\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "Graph, Computer Science","wordcount":  6407 ,
+        "url": "https:\/\/acejune.github.io\/blog\/paper-pagerank\/","datePublished": "2023-03-01T00:00:00+00:00","dateModified": "2023-03-01T00:00:00+00:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": {
+                    "@type": "ImageObject",
+                    "url": "https:\/\/acejune.github.io\/blog\/images\/avatar.webp",
+                    "width":  528 ,
+                    "height":  560 
+                }},"author": {
+                "@type": "Person",
+                "name": "June"
+            },"description": ""
+    }
+    </script><script src="//instant.page/5.1.1" defer type="module" integrity="sha384-MWfCL6g1OTGsbSwfuMHc8+8J2u71/LA8dzlIN3ycajckxuZZmF+DNjdm7O6H3PSq"></script>
+</head>
+
+<body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">
+        function setTheme(theme) {document.body.setAttribute('theme', theme); document.documentElement.style.setProperty('color-scheme', theme === 'light' ? 'light' : 'dark');}
+        function saveTheme(theme) {window.localStorage && localStorage.setItem('theme', theme);}
+        function getMeta(metaName) {const metas = document.getElementsByTagName('meta'); for (let i = 0; i < metas.length; i++) if (metas[i].getAttribute('name') === metaName) return metas[i]; return '';}
+        if (window.localStorage && localStorage.getItem('theme')) {let theme = localStorage.getItem('theme');theme === 'light' || theme === 'dark' || theme === 'black' ? setTheme(theme) : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light')); } else { if ('auto' === 'light' || 'auto' === 'dark' || 'auto' === 'black') setTheme('auto'), saveTheme('auto'); else saveTheme('auto'), window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? setTheme('dark') : setTheme('light');}
+        let metaColors = {'light': '#f8f8f8','dark': '#252627','black': '#000000'}
+        getMeta('theme-color').content = metaColors[document.body.getAttribute('theme')];
+    </script>
+    <div id="back-to-top"></div>
+    <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/blog/" title="june.log"><span class="header-title-pre">🍕</span><span id="desktop-header-typeit" class="typeit"></span></a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/blog/posts/">📝 Posts </a><a class="menu-item" href="/blog/tags/">🏷️ Tags </a><a class="menu-item" href="/blog/categories/">🗂 Categories </a><a class="menu-item" href="https://acejune.github.io/" rel="noopener noreferrer" target="_blank">🧑‍🦱 About </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-desktop" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="#" class="menu-item theme-select" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw"></i>
+                    <select class="color-theme-select" id="theme-select-desktop" title="Switch Theme">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="black">Black</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/blog/" title="june.log"><span class="header-title-pre">🍕</span><span id="mobile-header-typeit" class="typeit"></span></a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="Search titles or contents..." id="search-input-mobile">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-mobile" title="Search">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-mobile" title="Clear">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" class="search-cancel" id="search-cancel-mobile">
+                        Cancel
+                    </a>
+                </div><a class="menu-item" href="/blog/posts/" title="">📝Posts</a><a class="menu-item" href="/blog/tags/" title="">🏷️Tags</a><a class="menu-item" href="/blog/categories/" title="">🗂Categories</a><a class="menu-item" href="https://acejune.github.io/" title="" rel="noopener noreferrer" target="_blank">🧑‍🦱About</a><a href="#" class="menu-item theme-select" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw"></i>
+                <select class="color-theme-select" id="theme-select-mobile" title="Switch Theme">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                    <option value="black">Black</option>
+                    <option value="auto">Auto</option>
+                </select>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+            <div class="container"><div class="toc" id="toc-auto">
+        <h2 class="toc-title">Contents</h2>
+        <div class="toc-content" id="toc-content-auto"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-introduction">1 Introduction</a>
+      <ul>
+        <li><a href="#11-배경">1.1 배경</a></li>
+        <li><a href="#12-web-graph">1.2 Web graph</a></li>
+        <li><a href="#13-pagerank란">1.3 PageRank란?</a></li>
+        <li><a href="#14-pagerank의-가정">1.4 PageRank의 가정</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-pagerank를-바라보는-관점">2 PageRank를 바라보는 관점</a>
+      <ul>
+        <li><a href="#21-투표-관점">2.1 <code>투표</code> 관점</a>
+          <ul>
+            <li><a href="#211-투표-방법">2.1.1 투표 방법</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-random-walk-관점">2.2 <code>Random Walk</code> 관점</a></li>
+        <li><a href="#23-관점-정리">2.3 관점 정리</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-pagerank-문제점">3 PageRank 문제점</a>
+      <ul>
+        <li><a href="#31-spider-trap">3.1 Spider trap</a></li>
+        <li><a href="#32-dead-end">3.2 Dead end</a></li>
+        <li><a href="#33-해결-방법---teleport">3.3 해결 방법 - Teleport</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-pagerank-계산">4 PageRank 계산</a>
+      <ul>
+        <li><a href="#41-matrix-formulation">4.1 Matrix formulation</a></li>
+        <li><a href="#42-power-iteration">4.2 Power iteration</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-pagerank-계산-예시">5 PageRank 계산 예시</a>
+      <ul>
+        <li><a href="#51-adjacency-matrix">5.1 Adjacency matrix</a></li>
+        <li><a href="#52-adjacency-matrix-transpose">5.2 Adjacency matrix transpose</a></li>
+        <li><a href="#53-hyperlink-matrix">5.3 Hyperlink matrix</a></li>
+        <li><a href="#54-column-stochastic-matrix">5.4 Column stochastic matrix</a></li>
+        <li><a href="#55-google-matrix">5.5 Google matrix</a></li>
+        <li><a href="#56-rrank-벡터">5.6 Rrank 벡터</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-논문의-결론">6 논문의 결론</a></li>
+    <li><a href="#7-질문">7 질문</a>
+      <ul>
+        <li><a href="#71-구글은-지금도-pagerank를-사용할까">7.1 구글은 지금도 PageRank를 사용할까?</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-reference">8 Reference</a></li>
+  </ul>
+</nav></div>
+    </div><script>document.getElementsByTagName("main")[0].setAttribute("pageStyle", "normal")</script><script>document.getElementsByTagName("main")[0].setAttribute("autoTOC", "true")</script><article class="page single"><h1 class="single-title animate__animated animate__flipInX">[논문] The PageRank Citation Ranking: Bringing Order to the Web</h1><div class="post-meta">
+            <div class="post-meta-line">
+                <span class="post-author"><i class="author fas fa-user-circle fa-fw"></i><a href="https://acejune.github.io/" title="Author" target="_blank" rel="noopener noreferrer author" class="author">June</a>
+                </span>&nbsp;<span class="post-category">included in </span>&nbsp;<span class="post-category">category <a href="/blog/categories/paper/"><i class="far fa-folder fa-fw"></i>Paper</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2023-03-01">2023-03-01</time>&nbsp;<i class="far fa-edit fa-fw"></i>&nbsp;<time datetime="2023-03-01">2023-03-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;6407 words&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;13 minutes&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-introduction">1 Introduction</a>
+      <ul>
+        <li><a href="#11-배경">1.1 배경</a></li>
+        <li><a href="#12-web-graph">1.2 Web graph</a></li>
+        <li><a href="#13-pagerank란">1.3 PageRank란?</a></li>
+        <li><a href="#14-pagerank의-가정">1.4 PageRank의 가정</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-pagerank를-바라보는-관점">2 PageRank를 바라보는 관점</a>
+      <ul>
+        <li><a href="#21-투표-관점">2.1 <code>투표</code> 관점</a>
+          <ul>
+            <li><a href="#211-투표-방법">2.1.1 투표 방법</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-random-walk-관점">2.2 <code>Random Walk</code> 관점</a></li>
+        <li><a href="#23-관점-정리">2.3 관점 정리</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-pagerank-문제점">3 PageRank 문제점</a>
+      <ul>
+        <li><a href="#31-spider-trap">3.1 Spider trap</a></li>
+        <li><a href="#32-dead-end">3.2 Dead end</a></li>
+        <li><a href="#33-해결-방법---teleport">3.3 해결 방법 - Teleport</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-pagerank-계산">4 PageRank 계산</a>
+      <ul>
+        <li><a href="#41-matrix-formulation">4.1 Matrix formulation</a></li>
+        <li><a href="#42-power-iteration">4.2 Power iteration</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-pagerank-계산-예시">5 PageRank 계산 예시</a>
+      <ul>
+        <li><a href="#51-adjacency-matrix">5.1 Adjacency matrix</a></li>
+        <li><a href="#52-adjacency-matrix-transpose">5.2 Adjacency matrix transpose</a></li>
+        <li><a href="#53-hyperlink-matrix">5.3 Hyperlink matrix</a></li>
+        <li><a href="#54-column-stochastic-matrix">5.4 Column stochastic matrix</a></li>
+        <li><a href="#55-google-matrix">5.5 Google matrix</a></li>
+        <li><a href="#56-rrank-벡터">5.6 Rrank 벡터</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-논문의-결론">6 논문의 결론</a></li>
+    <li><a href="#7-질문">7 질문</a>
+      <ul>
+        <li><a href="#71-구글은-지금도-pagerank를-사용할까">7.1 구글은 지금도 PageRank를 사용할까?</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-reference">8 Reference</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><br>
+<p><a href="http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf" target="_blank" rel="noopener noreferrer">The PageRank Citation Ranking Bringing Order to the Web (1998)</a> 논문을 정리해보겠습니다.</p>
+<hr>
+<h2 id="1-introduction" class="headerLink">
+    <a href="#1-introduction" class="header-mark"></a>1 Introduction</h2><h3 id="11-배경" class="headerLink">
+    <a href="#11-%eb%b0%b0%ea%b2%bd" class="header-mark"></a>1.1 배경</h3><p>ㅤ구글 이전의 검색 엔진은, 사용자가 입력한 키워드에 의존하여 웹 페이지를 보여주었습니다. 이러한 검색 엔진에서는, 악성 웹 페이지들이 검색 엔진을 속이고, 사용자들을 자신의 페이지로 오게 만들기 쉬웠습니다.</p>
+<p>ㅤ예를 들어, 운동화 판매자가 운동화 판매 페이지에 운동화와 관련 없는 내용(e.g., 영화, 음악, …)들을 잔뜩 적어놓을 수 있습니다. 그렇다면, 검색 엔진은 영화를 키워드로 검색해도, 이 운동화 판매 페이지를 보여주게 됩니다.</p>
+<p>ㅤ키워드에 의존하는 검색 엔진은, 사용자의 검색 키워드와 상관없는 페이지를 보여주기 쉬웠습니다. 이러한 문제점을 해결하기 위해, PageRank 기술이 나왔습니다.</p>
+<h3 id="12-web-graph" class="headerLink">
+    <a href="#12-web-graph" class="header-mark"></a>1.2 Web graph</h3><p>ㅤPageRank는 웹 그래프(web graph)를 이용하는 기술입니다. 먼저 웹 그래프를 알아본 다음, PageRank를 살펴보겠습니다.</p>
+<br>
+<p>ㅤ<strong>웹 그래프(web graph)</strong> 는 World Wide Web을 그래프로 표현한 것입니다. 이 그래프는 directed graph이며, node는 웹 페이지이고, edge는 하이퍼링크입니다.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">Web graph</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Node</td>
+<td style="text-align:center">웹 페이지</td>
+</tr>
+<tr>
+<td style="text-align:center">Edge</td>
+<td style="text-align:center">하이퍼링크</td>
+</tr>
+</tbody>
+</table>
+<br>
+<p>ㅤ[그림 1]에서 <code>A 페이지</code>에서 <code>C 페이지</code>로 가는 <code>하이퍼링크</code>가 있다면, 이것은 <code>A-C directed edge</code>로 표현합니다.</p>
+<figure><a class="lightgallery" href="./Fig_01_web_graph.png" title="./Fig_01_web_graph.png" data-thumbnail="./Fig_01_web_graph.png" data-sub-html="<h2>[그림 1] 웹 그래프 출처: The PageRank Citation Ranking Bringing Order to the Web (1998)</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_01_web_graph.png"
+            srcset="./Fig_01_web_graph.png, ./Fig_01_web_graph.png 1.5x, ./Fig_01_web_graph.png 2x"
+            sizes="auto"
+            alt="./Fig_01_web_graph.png"width="300px">
+    </a><figcaption class="image-caption">[그림 1] 웹 그래프 <br>출처: <a href="http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf" target="_blank" rel="noopener noreferrer">The PageRank Citation Ranking Bringing Order to the Web (1998)</a></figcaption>
+    </figure>
+<h3 id="13-pagerank란" class="headerLink">
+    <a href="#13-pagerank%eb%9e%80" class="header-mark"></a>1.3 PageRank란?</h3><p>ㅤ우리가 PageRank를 통해 하고 싶은 것은, 네이버, 구글과 같은 검색 엔진에서, 어느 웹 페이지를 먼저 보여주어야 할지를 구하는 것입니다.</p>
+<p>ㅤ우리가 구하고 싶은, <code>웹 페이지의 점수(중요성, 신뢰성)</code>를 <strong>rank</strong>라고 하겠습니다. 우리가 PageRank를 통해 하고 싶은 것을 다시 표현하면, 우리는 PageRank를 통해 모든 웹 페이지의 rank를 계산하고 싶습니다.</p>
+<h3 id="14-pagerank의-가정" class="headerLink">
+    <a href="#14-pagerank%ec%9d%98-%ea%b0%80%ec%a0%95" class="header-mark"></a>1.4 PageRank의 가정</h3><p>ㅤPageRank가 각 웹페이지의 rank를 계산하기 위해서는, 어느 웹 페이지에 점수를 더 주어야 할지를 정해야 합니다. 이러한 규칙을 논문에서는 가정(underlying assumption)이라고 했습니다. 규칙은 아래와 같습니다.</p>
+<ul>
+<li>참조가 많이 된 페이지는 참조가 적게 된 페이지보다 중요하다.</li>
+<li>중요한 페이지가 참조한 페이지는 중요하다.</li>
+</ul>
+<br>
+<p>ㅤPageRank의 가정에 대한 예시를 [그림 2]를 통해 살펴보겠습니다.</p>
+<figure><a class="lightgallery" href="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png" title="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png" data-thumbnail="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png" data-sub-html="<h2>[그림 2] PageRank 예시 출처: Wikipedia - PageRank</h2>">
+        <img
+            
+            loading="lazy"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png"
+            srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png, https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png 2x"
+            sizes="auto"
+            alt="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/1920px-PageRanks-Example.svg.png"width="400px">
+    </a><figcaption class="image-caption">[그림 2] PageRank 예시 <br>출처: <a href="https://en.wikipedia.org/wiki/PageRank" target="_blank" rel="noopener noreferrer">Wikipedia - PageRank</a></figcaption>
+    </figure>
+<ul>
+<li><code>웹 페이지 B</code>
+<ul>
+<li>B는 다른 웹 페이지들로부터 참조가 많이 됐기 때문에, rank가 가장 높습니다.</li>
+</ul>
+</li>
+<li><code>웹 페이지 C</code>
+<ul>
+<li>C는 참조가 1번밖에 안 됐지만, rank가 가장 높은 B가 참조하고 있으므로, 2번째로 rank가 높습니다.</li>
+</ul>
+</li>
+<li><code>보라색 페이지들</code>
+<ul>
+<li>참조가 없지만, PageRank의 어떤 기법 (teleport) 때문에, rank가 0이 아닙니다.</li>
+<li>(이 부분은 글 아래에서 확인하겠습니다.)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="2-pagerank를-바라보는-관점" class="headerLink">
+    <a href="#2-pagerank%eb%a5%bc-%eb%b0%94%eb%9d%bc%eb%b3%b4%eb%8a%94-%ea%b4%80%ec%a0%90" class="header-mark"></a>2 PageRank를 바라보는 관점</h2><p>ㅤ이번 장에서는 2가지 관점으로 PageRank를 이해해보겠습니다.</p>
+<ol>
+<li>투표 관점</li>
+<li>Random Walk 관점</li>
+</ol>
+<h3 id="21-투표-관점" class="headerLink">
+    <a href="#21-%ed%88%ac%ed%91%9c-%ea%b4%80%ec%a0%90" class="header-mark"></a>2.1 <code>투표</code> 관점</h3><p>ㅤPageRank는 투표를 통해 중요한 웹 페이지를 찾습니다. 웹 그래프에서, 웹 페이지(node)는 투표를 받는 대상이고, 하이퍼링크(edge)는 투표된 표를 의미합니다.</p>
+<br>
+<p>ㅤ[그림 1]을 보며, 투표에 대해 이해해보겠습니다. <code>A 페이지</code>는 <code>하이퍼링크</code>를 통해 <code>C 페이지</code>에 투표했다고 할 수 있습니다.</p>
+<figure><a class="lightgallery" href="./Fig_01_web_graph.png" title="./Fig_01_web_graph.png" data-thumbnail="./Fig_01_web_graph.png" data-sub-html="<h2>[그림 1] 웹 그래프 출처: The PageRank Citation Ranking Bringing Order to the Web (1998)</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_01_web_graph.png"
+            srcset="./Fig_01_web_graph.png, ./Fig_01_web_graph.png 1.5x, ./Fig_01_web_graph.png 2x"
+            sizes="auto"
+            alt="./Fig_01_web_graph.png"width="300px">
+    </a><figcaption class="image-caption">[그림 1] 웹 그래프 <br>출처: <a href="http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf" target="_blank" rel="noopener noreferrer">The PageRank Citation Ranking Bringing Order to the Web (1998)</a></figcaption>
+    </figure>
+<br>
+<p>ㅤ다음과 같이 표현을 정리할 수 있습니다.</p>
+<ul>
+<li><strong>웹 페이지 A가 웹 페이지 B를 참조한다</strong></li>
+<li>== 웹 페이지 A에서 웹 페이지 B로 가는 하이퍼링크가 있다</li>
+<li>== <strong>웹 페이지 B에는 웹 페이지 A로부터 오는 backlink (in-edge, in-link)가 있다</strong></li>
+<li>== 웹 페이지 A가 웹 페이지 B를 투표했다</li>
+<li>== <strong>웹 페이지 A의 작성자가 웹 페이지 B를 신뢰할 수 있다고 판단했다</strong></li>
+</ul>
+<br>
+<p>ㅤ즉, 어떤 페이지에 backlink (in-edge, in-link)가 많을수록, 그 페이지를 신뢰할 수 있다고 말할 수 있습니다.</p>
+<h4 id="211-투표-방법" class="headerLink">
+    <a href="#211-%ed%88%ac%ed%91%9c-%eb%b0%a9%eb%b2%95" class="header-mark"></a>2.1.1 투표 방법</h4><p>ㅤ우리는, 모든 투표 후에, 신뢰가 가는 페이지가 다른 페이지들보다 투표 점수(rank)가 높기를 바랍니다. 어떻게 투표가 이루어지는지 살펴보겠습니다.</p>
+<br>
+<p>ㅤ<strong>투표 방법</strong> 은 아래와 같습니다.</p>
+<ol>
+<li>모든 웹 페이지는 투표 점수를 갖고 있습니다. (보통, 맨 처음에는 모두 같은 투표 점수를 갖고 있습니다.)</li>
+<li>웹 페이지는 자신의 투표 점수를, 투표하려는 웹 페이지에 똑같이 나누어서 투표합니다.</li>
+<li>투표가 끝난 뒤, 각 웹 페이지는 자신이 받은 투표 점수를 모두 더하여, 자신의 새로운 투표 점수를 계산합니다.</li>
+</ol>
+<p>ㅤ이러한 투표 방법을 도입한 이유는, 악성 웹 페이지들이 서로를 참조하여, backlink 수를 높게 만드는 조작을 하지 못하게 하기 위해서입니다. 단순하게 각 페이지의 backlink 수를 세지 않고, 이러한 투표 방식을 도입했습니다.</p>
+<br>
+<p>ㅤ<strong>구체적인 예시</strong> ([그림 3])를 통해 어떠한 방식으로 투표가 이루어지고, 계산되는지 알아보겠습니다.</p>
+<ol>
+<li>빨간색 node인 페이지 $j$는, 자신의 투표 점수(rank) $r_j$를 out-degree 수로 나눈 $\displaystyle \frac{r_j}{3}$를, out-edge가 가리키는 페이지에 보냅니다.</li>
+<li>빨간색 node인 페이지 $j$의 새로운 투표 점수(rank)는, in-edge를 통해 받은 투표 점수들의 합입니다.
+<ul>
+<li>$\displaystyle r_j = \frac{r_i}{3} + \frac{r_k}{4}$</li>
+</ul>
+</li>
+</ol>
+<figure><a class="lightgallery" href="./Fig_03_vote.png" title="./Fig_03_vote.png" data-thumbnail="./Fig_03_vote.png" data-sub-html="<h2>[그림 3] 웹 그래프에서의 투표 방법 출처: Stanford CS224W - 4. Link Analysis: PageRank</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_03_vote.png"
+            srcset="./Fig_03_vote.png, ./Fig_03_vote.png 1.5x, ./Fig_03_vote.png 2x"
+            sizes="auto"
+            alt="./Fig_03_vote.png"width="300px">
+    </a><figcaption class="image-caption">[그림 3] 웹 그래프에서의 투표 방법 <br>출처: <a href="http://web.stanford.edu/class/cs224w/slides/04-pagerank.pdf" target="_blank" rel="noopener noreferrer">Stanford CS224W - 4. Link Analysis: PageRank</a></figcaption>
+    </figure>
+<br>
+<p>ㅤ위의 예시를 이해했다면, 어떠한 웹 페이지($j$)의 rank($r_j$)는 다음과 같이 정의할 수 있습니다.</p>
+<ul>
+<li>$d_i$: 페이지 $i$의 out-degree</li>
+<li>$\displaystyle r_j = \sum_{i \rightarrow j}^{} \frac{r_i}{d_i}$</li>
+</ul>
+<h3 id="22-random-walk-관점" class="headerLink">
+    <a href="#22-random-walk-%ea%b4%80%ec%a0%90" class="header-mark"></a>2.2 <code>Random Walk</code> 관점</h3><p>ㅤrandom walk를 통해, 웹을 서핑하는 웹 서퍼가 있다고 가정해보겠습니다. 이 웹 서퍼는 현재 웹 페이지에 있는 여러 하이퍼링크 중 하나를 uniform한 확률로 선택해서 이동합니다. 이러한 웹 서퍼의 행동을 수학적으로 나타내보겠습니다.</p>
+<br>
+<p>ㅤ$p (t)$ 벡터가 있다고 가정해보겠습니다. $p (t)$의 $i$번째 값인 $p_i (t)$는, 웹 서퍼가 $t$ 번째 방문한 곳이 웹 페이지 $i$일 확률입니다. 그렇다면, $p (t)$는 웹 페이지에 대한 확률 분포가 됩니다.</p>
+<p>ㅤ$p (t)$로부터 $p (t+1)$을 계산할 수도 있습니다.</p>
+<p>$$
+p_j (t+1) = \sum_{i \rightarrow j}^{} \bigg ( p_i(t) \times \frac{1}{d_i} \bigg ) = \sum_{i \rightarrow j}^{} \frac{p_i (t)}{d_i}
+$$</p>
+<br>
+<p>ㅤ$p (t)$로부터 $p (t+1)$을 계산하고, $p (t+1)$로부터 $p (t+2)$를 계산하는 과정을 무한히 반복하고 나면 (즉 $t$가 무한히 커지면), 확률 분포 $p(t)$는 수렴하게 됩니다. 즉, $p(t) = p(t+1) = p$가 성립하게 합니다. 수렴한 확률 분포 $p$는 stationary distribution이라고 부릅니다.</p>
+<p>ㅤ이렇게 되면, 식을 다음과 같이 바꿀 수 있습니다.</p>
+<p>$$
+p_j (t+1) = \sum_{i \rightarrow j}^{} \frac{p_i (t)}{d_i} \quad \red{\Rightarrow} \quad p_j = \sum_{i \rightarrow j}^{} \frac{p_i}{d_i}
+$$</p>
+<h3 id="23-관점-정리" class="headerLink">
+    <a href="#23-%ea%b4%80%ec%a0%90-%ec%a0%95%eb%a6%ac" class="header-mark"></a>2.3 관점 정리</h3><p>ㅤ앞에서 살펴본 투표 관점과 random walk 관점은 모두 같은 내용을 담고 있습니다. 논문에서 제시하는 rank의 수식과 투표 관점에서 정의한 rank와 random walk 관점에서의 stationary distribution은 모두 같습니다.</p>
+<br>
+<p><strong>&lt; 논문에서 제시하는 rank의 수식 &gt;</strong></p>
+<ul>
+<li>
+<p>$\displaystyle R(u) = c \sum_{v \in B_u}^{} \frac{R(v)}{N_v}$</p>
+</li>
+<li>
+<p>$u$: 웹 페이지</p>
+</li>
+<li>
+<p>$B_u$: 페이지 $u$를 가리키는 페이지의 집합</p>
+</li>
+<li>
+<p>$N_u$: 페이지 $u$가 가리키는 페이지의 수</p>
+<ul>
+<li>$N_u = |F_u|$</li>
+<li>$F_u$: 페이지 $u$가 가리키는 페이지의 집합</li>
+</ul>
+</li>
+<li>
+<p>$c$: normalization factor</p>
+<ul>
+<li>모든 웹 페이지의 총 rank가 일정하게 유지되도록 하는 요소</li>
+</ul>
+</li>
+</ul>
+<br>
+<p><strong>&lt; 투표 관점에서 정의한 rank &gt;</strong></p>
+<ul>
+<li>$d_i$: 페이지 $i$의 out-degree</li>
+<li>$\displaystyle r_j = \sum_{i \rightarrow j}^{} \frac{r_i}{d_i}$</li>
+</ul>
+<br>
+<p><strong>&lt; random walk 관점에서의 stationary distribution &gt;</strong></p>
+<ul>
+<li>$d_i$: 페이지 $i$의 out-degree</li>
+<li>$\displaystyle p_j = \sum_{i \rightarrow j}^{} \frac{p_i}{d_i}$</li>
+</ul>
+<hr>
+<h2 id="3-pagerank-문제점" class="headerLink">
+    <a href="#3-pagerank-%eb%ac%b8%ec%a0%9c%ec%a0%90" class="header-mark"></a>3 PageRank 문제점</h2><p>ㅤ우리는 모든 웹 그래프에서 PageRank 알고리즘이 잘 작동되는지 궁금합니다. 크게 2가지 질문을 던질 수 있습니다.</p>
+<ol>
+<li>rank 수렴이 보장되나요?</li>
+<li>&ldquo;합리적인&rdquo; rank로 수렴하는 것이 보장되나요?</li>
+</ol>
+<h3 id="31-spider-trap" class="headerLink">
+    <a href="#31-spider-trap" class="header-mark"></a>3.1 Spider trap</h3><p>ㅤ<strong>rank 수렴이 보장되나요?</strong> 에 대한 질문부터 다뤄보겠습니다.</p>
+<br>
+<p>ㅤ모든 그래프가 rank의 수렴을 보장하지는 않습니다. spider trap이 있는 그래프는 수렴을 보장하지 않습니다. <strong>spider trap</strong>은 들어오는 edge는 있지만, 나가는 edge는 없는 <strong>node 집합</strong>을 말합니다.</p>
+<br>
+<p>ㅤspider trap으로 인해 문제가 발생하는 경우는 [그림 4]에 나와 있습니다.</p>
+<p>ㅤ{B, C, D} node 집합으로 들어오는 edge는 있지만, 나가는 edge는 없습니다. 이러한 {B, C, D} node들을 spider trap이라고 합니다. A node의 rank는 0으로 수렴하고, {B, C, D} node들의 rank는 수렴하지 않는 문제가 발생합니다.</p>
+<figure><a class="lightgallery" href="./Fig_04_spider_trap.png" title="./Fig_04_spider_trap.png" data-thumbnail="./Fig_04_spider_trap.png" data-sub-html="<h2>[그림 4] Spider trap 예시 출처: The PageRank Citation Ranking Bringing Order to the Web (1998)</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_04_spider_trap.png"
+            srcset="./Fig_04_spider_trap.png, ./Fig_04_spider_trap.png 1.5x, ./Fig_04_spider_trap.png 2x"
+            sizes="auto"
+            alt="./Fig_04_spider_trap.png"width="600px">
+    </a><figcaption class="image-caption">[그림 4] Spider trap 예시 <br>출처: <a href="http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf" target="_blank" rel="noopener noreferrer">The PageRank Citation Ranking Bringing Order to the Web (1998)</a></figcaption>
+    </figure>
+<p>ㅤspider trap으로 인해 발생하는 문제의 해결 방법은 <a href="#33-%ed%95%b4%ea%b2%b0-%eb%b0%a9%eb%b2%95---teleport" rel="">3.3 해결 방법 - Teleport</a>에서 알아보겠습니다.</p>
+<h3 id="32-dead-end" class="headerLink">
+    <a href="#32-dead-end" class="header-mark"></a>3.2 Dead end</h3><p>ㅤ다음으로, <strong>&ldquo;합리적인&rdquo; rank로 수렴하는 것이 보장되나요?</strong> 에 대한 질문을 다뤄보겠습니다.</p>
+<br>
+<p>ㅤ모든 그래프가 &ldquo;합리적인&rdquo; rank로 수렴하는 것을 보장하지는 않습니다. dead end가 있는 그래프는 &ldquo;합리적인&rdquo; rank로의 수렴을 보장하지 않습니다. <strong>dead end</strong>는 들어오는 edge는 있지만, 나가는 edge는 없는 <strong>node</strong>를 말합니다.</p>
+<p>ㅤdead end 문제는 dangling link 문제라고도 합니다.</p>
+<br>
+<p>ㅤdead end로 인해 문제가 발생하는 경우는 [그림 5]에 나와 있습니다.</p>
+<p>ㅤB node를 보면, 들어오는 edge는 있지만, 나가는 edge는 없습니다. 이러한 B node를 dead end라고 합니다. [그림 5]에 있는 그래프의 rank는 모두 0으로 수렴합니다. 이는 &ldquo;합리적인&rdquo; rank가 아닙니다.</p>
+<figure><a class="lightgallery" href="./Fig_05_dead_end.png" title="./Fig_05_dead_end.png" data-thumbnail="./Fig_05_dead_end.png" data-sub-html="<h2>[그림 5] Dead end 예시 출처: Stanford CS224W - 4. Link Analysis: PageRank</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_05_dead_end.png"
+            srcset="./Fig_05_dead_end.png, ./Fig_05_dead_end.png 1.5x, ./Fig_05_dead_end.png 2x"
+            sizes="auto"
+            alt="./Fig_05_dead_end.png"width="500px">
+    </a><figcaption class="image-caption">[그림 5] Dead end 예시 <br>출처: <a href="http://web.stanford.edu/class/cs224w/slides/04-pagerank.pdf" target="_blank" rel="noopener noreferrer">Stanford CS224W - 4. Link Analysis: PageRank</a></figcaption>
+    </figure>
+<p>ㅤdead end로 인해 발생하는 문제의 해결 방법은 <a href="#33-%ed%95%b4%ea%b2%b0-%eb%b0%a9%eb%b2%95---teleport" rel="">3.3 해결 방법 - Teleport</a>에서 알아보겠습니다.</p>
+<br>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>논문에서는 dead end를 어떻게 해결했을까?<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><ul>
+<li>논문에서는 dead end를 모두 제거한 후에, rank를 계산했습니다.</li>
+<li>논문의 <strong>2.7 Dangling Links</strong>을 보면, 다음과 같이 나와 있습니다.
+<blockquote>
+<p>dangling links는 다른 페이지의 rank에 직접적인 영향을 미치지 않기 때문에, 모든 PageRank가 계산될 때까지 시스템에서 dangling links를 제거하기만 하면 됩니다.
+<br><br>
+제거된 dangling links와 같은 페이지에 있는 다른 edge의 normalization은 약간 변하지만, 큰 영향은 없을 것입니다.</p>
+</blockquote>
+</li>
+</ul>
+</div>
+        </div>
+    </div>
+<h3 id="33-해결-방법---teleport" class="headerLink">
+    <a href="#33-%ed%95%b4%ea%b2%b0-%eb%b0%a9%eb%b2%95---teleport" class="header-mark"></a>3.3 해결 방법 - Teleport</h3><p>ㅤ위에서 살펴본 2가지 문제(spider trap, dead end)는 모두 <strong>teleport (순간 이동, 점프)</strong> 로 해결할 수 있습니다.</p>
+<br>
+<p>ㅤrandom walk 관점에서 가정했던 웹 서퍼의 행동에 teleport를 적용해보겠습니다.</p>
+<ol>
+<li>현재 웹 페이지에 하이퍼링크가 없다면, 랜덤한 웹 페이지로 teleport 합니다.</li>
+<li>현재 웹 페이지에 하이퍼링크가 있다면,
+<ul>
+<li>$\alpha$의 확률로, 하이퍼링크 중 하나를 uniform한 확률로 선택해 이동합니다.</li>
+<li>$(1 - \alpha)$의 확률로, 랜덤한 웹 페이지로 teleport 합니다.</li>
+<li>$\alpha$를 <strong>damping factor</strong>라고 부르며, $[0.8,\ 0.9]$ 정도를 사용합니다.</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>teleport를 하는 경우엔, 전체 웹 페이지 중에 하나를 uniform한 확률로 선택합니다.</li>
+</ul>
+<br>
+<p>ㅤteleport에 의해서, spider trap이나 dead end에 갇히는 일이 없어집니다.</p>
+<br>
+<p>ㅤteleport를 도입함으로써, rank를 계산하는 식은 아래와 같이 바뀝니다.</p>
+<br>
+<p><strong>&lt; 기존의 PageRank 식 &gt;</strong></p>
+<p>$$\displaystyle r_j = \sum_{i \rightarrow j}^{} \frac{r_i}{d_i}$$</p>
+<br>
+<p><strong>&lt; 새로운 PageRank 식 &gt;</strong></p>
+<p>$$\displaystyle r_j = \sum_{i \rightarrow j}^{} \bigg( \alpha \frac{r_i}{d_i} \bigg) + (1-\alpha) \frac{1}{N}$$</p>
+<ul>
+<li>$N$은 총 웹 페이지(node)의 수를 의미합니다.</li>
+<li>식 $\displaystyle \sum_{i \rightarrow j}^{} \bigg( \alpha \frac{r_i}{d_i} \bigg)$ 는 하이퍼링크를 따라 node $j$에 도착할 확률을 의미합니다.</li>
+<li>식 $\displaystyle (1-\alpha) \frac{1}{N}$ 은 teleport를 통해 node $j$에 도착할 확률을 의미합니다.</li>
+</ul>
+<hr>
+<h2 id="4-pagerank-계산" class="headerLink">
+    <a href="#4-pagerank-%ea%b3%84%ec%82%b0" class="header-mark"></a>4 PageRank 계산</h2><p>ㅤ이번 장에서는 PageRank를 계산하는 수학적인 이야기를 살짝 하도록 하겠습니다. <a href="#4-pagerank-%ea%b3%84%ec%82%b0" rel="">4장</a>에는 spider trap과 dead end 문제가 없다고 가정하고, 이야기하도록 하겠습니다. <a href="#5-pagerank-%ea%b3%84%ec%82%b0-%ec%98%88%ec%8b%9c" rel="">5장</a>에서는 spider trap과 dead end 문제가 있는 그래프의 구체적인 계산 과정을 살펴보겠습니다.</p>
+<h3 id="41-matrix-formulation" class="headerLink">
+    <a href="#41-matrix-formulation" class="header-mark"></a>4.1 Matrix formulation</h3><p>ㅤ기존의 PageRank 식은 아래와 같이 matrix 형태로 나타낼 수 있습니다.</p>
+<p>$$r = M \cdot r$$</p>
+<ul>
+<li>$r$: rank 벡터</li>
+<li>$M$: column stochastic adjacency matrix
+<ul>
+<li>$\displaystyle M_{u, v} = \begin{cases} \frac{1}{N_u}, &amp; \text{if there is an edge from } v \text{ to } u \\\ 0, &amp; \text{otherwise} \end{cases}$</li>
+<li>$N_u$: node $u$가 가리키는 node의 수</li>
+</ul>
+</li>
+</ul>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Column stochastic matrix<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><ul>
+<li>column stochastic matrix는
+<ul>
+<li>matrix의 모든 값이 음수가 아닙니다.</li>
+<li>각 column의 합이 1입니다.</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+    </div>
+<br> 
+<p>ㅤ예시를 통해서, 어떻게 PageRank 식을 matrix 형태로 나타낼 수 있는지 보겠습니다.</p>
+<figure><a class="lightgallery" href="./Fig_06.png" title="./Fig_06.png" data-thumbnail="./Fig_06.png" data-sub-html="<h2>[그림 6] 그래프 예시 출처: Stanford CS224W - 4. Link Analysis: PageRank</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_06.png"
+            srcset="./Fig_06.png, ./Fig_06.png 1.5x, ./Fig_06.png 2x"
+            sizes="auto"
+            alt="./Fig_06.png"width="250px">
+    </a><figcaption class="image-caption">[그림 6] 그래프 예시 <br>출처: <a href="http://web.stanford.edu/class/cs224w/slides/04-pagerank.pdf" target="_blank" rel="noopener noreferrer">Stanford CS224W - 4. Link Analysis: PageRank</a></figcaption>
+    </figure>
+<ol>
+<li>각 페이지가 얻는 rank를 연립 방정식으로 나타냅니다.
+<ul>
+<li>$\displaystyle r_a = \frac{1}{2} r_a + \frac{1}{2} r_b$</li>
+<li>$\displaystyle r_b = \frac{1}{2} r_a + r_c$</li>
+<li>$\displaystyle r_c = \frac{1}{2} r_b$</li>
+</ul>
+</li>
+<li>(1)의 연립 방정식을 matrix 형태로 변환합니다.
+$$
+\begin{bmatrix}
+r_a \\\
+r_b \\\
+r_c
+\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{1}{2} &amp; \frac{1}{2} &amp; 0 \\\
+\frac{1}{2} &amp; 0 &amp; 1 \\\
+0 &amp; \frac{1}{2} &amp; 0
+\end{bmatrix}
+\begin{bmatrix}
+r_a \\\
+r_b \\\
+r_c
+\end{bmatrix}
+$$</li>
+<li>(2)의 matrix 식은 간단하게 $r = M \cdot r$로 나타낼 수 있음.
+<ul>
+<li>이때, $M$은 column stochastic matrix입니다.
+$$
+r =
+\begin{bmatrix}
+r_a \\\
+r_b \\\
+r_c
+\end{bmatrix}
+, \quad
+M
+=
+\begin{bmatrix}
+\frac{1}{2} &amp; \frac{1}{2} &amp; 0 \\\
+\frac{1}{2} &amp; 0 &amp; 1 \\\
+0 &amp; \frac{1}{2} &amp; 0
+\end{bmatrix}
+$$</li>
+</ul>
+</li>
+</ol>
+<h3 id="42-power-iteration" class="headerLink">
+    <a href="#42-power-iteration" class="header-mark"></a>4.2 Power iteration</h3><p>ㅤ<a href="#41-matrix-formulation" rel="">4.1</a>에서 본 $r = M \cdot r$ 식을 다시 쓰면, $\ M \cdot r = 1 \cdot r$ 입니다. $M \cdot r = 1 \cdot r$ 식은, $M$의 <code>eigenvalue</code>가 1이고, <code>eigenvector</code>가 $r$이라고 할 수 있습니다. eigenvector $r$을 구하기 위해, <strong>power iteration</strong>을 사용합니다.</p>
+<br>
+<p><strong>&lt; power iteration 3단계 &gt;</strong></p>
+<ol>
+<li>
+<p>각 웹 페이지 $i$의 rank $r_{i}^{(0)}$를 동일하게 $ \displaystyle r_{i}^{(0)} = \frac{1}{\text{웹 페이지의 수}}$ 로 초기화합니다.</p>
+</li>
+<li>
+<p>아래 식을 이용하여, 각 웹 페이지의 rank를 갱신합니다.</p>
+<p>$$r_{j}^{(t+1)} = \sum_{i \rightarrow j}^{} \frac{r_i^{(t)}}{d_i}$$</p>
+</li>
+<li>
+<p>rank가 수렴하면 ($r^{(t)} \approx r^{(t+1)}$) 종료하고, 아니면 (2)로 돌아갑니다.</p>
+</li>
+</ol>
+<br>
+<p>ㅤrank가 수렴하면, $r^{(t)} \approx r^{(t+1)}$을 rank 벡터로 사용합니다.</p>
+<hr>
+<h2 id="5-pagerank-계산-예시" class="headerLink">
+    <a href="#5-pagerank-%ea%b3%84%ec%82%b0-%ec%98%88%ec%8b%9c" class="header-mark"></a>5 PageRank 계산 예시</h2><p>ㅤ[그림 7]과 같은 웹 그래프가 있을 때, 그래프에 PageRank 알고리즘을 적용해보겠습니다.</p>
+<figure><a class="lightgallery" href="./Fig_07_rank_calc.png" title="./Fig_07_rank_calc.png" data-thumbnail="./Fig_07_rank_calc.png" data-sub-html="<h2>[그림 7] Spider trap과 Dead end가 모두 있는 웹 그래프</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_07_rank_calc.png"
+            srcset="./Fig_07_rank_calc.png, ./Fig_07_rank_calc.png 1.5x, ./Fig_07_rank_calc.png 2x"
+            sizes="auto"
+            alt="./Fig_07_rank_calc.png"width="400px">
+    </a><figcaption class="image-caption">[그림 7] Spider trap과 Dead end가 모두 있는 웹 그래프</figcaption>
+    </figure>
+<h3 id="51-adjacency-matrix" class="headerLink">
+    <a href="#51-adjacency-matrix" class="header-mark"></a>5.1 Adjacency matrix</h3><p>ㅤ먼저, 웹 그래프의 adjacency matrix $A$ 를 구합니다. $A$는 row node에서 column node로 가는 edge가 있으면 1, 없으면 0입니다.</p>
+<br>
+<p>ㅤ[그림 7]의 adjacency matrix $A$는 아래와 같습니다.</p>
+<p>$$
+A =
+\begin{bmatrix}
+0 &amp; 1 &amp; 0 &amp; 1 \\\
+0 &amp; 0 &amp; 1 &amp; 0 \\\
+0 &amp; 1 &amp; 0 &amp; 0 \\\
+0 &amp; 0 &amp; 0 &amp; 0
+\end{bmatrix}
+$$</p>
+<h3 id="52-adjacency-matrix-transpose" class="headerLink">
+    <a href="#52-adjacency-matrix-transpose" class="header-mark"></a>5.2 Adjacency matrix transpose</h3><p>ㅤ다음으로, $A$를 transpose 한 matrix $A^T$ 구합니다. $A^T$는 column node에서 row node로 가는 edge가 있으면 1, 없으면 0입니다.</p>
+<br>
+<p>ㅤ[그림 7]의 adjacency matrix $A$를 transpose 한 $A^T$는 아래와 같습니다.</p>
+<p>$$
+A^T =
+\begin{bmatrix}
+0 &amp; 0 &amp; 0 &amp; \color{red}{0} \\\
+1 &amp; 0 &amp; 1 &amp; \color{red}{0} \\\
+0 &amp; 1 &amp; 0 &amp; \color{red}{0} \\\
+1 &amp; 0 &amp; 0 &amp; \color{red}{0}
+\end{bmatrix}
+$$</p>
+<h3 id="53-hyperlink-matrix" class="headerLink">
+    <a href="#53-hyperlink-matrix" class="header-mark"></a>5.3 Hyperlink matrix</h3><p>ㅤ다음으로, $A^T$를 hyperlink matrix $H$로 변환합니다. hyperlink matrix는 $A^T$의 값들을, column 별로, column의 합으로 나눈 matrix입니다.</p>
+<br>
+<p>ㅤ[그림 7]의 hyperlink matrix인 $H$는 아래와 같습니다.</p>
+<p>$$
+H =
+\begin{bmatrix}
+0 &amp; 0 &amp; 0 &amp; \color{red}{0} \\\
+\frac{1}{2} &amp; 0 &amp; 1 &amp; \color{red}{0} \\\
+0 &amp; 1 &amp; 0 &amp; \color{red}{0} \\\
+\frac{1}{2} &amp; 0 &amp; 0 &amp; \color{red}{0}
+\end{bmatrix}
+$$</p>
+<h3 id="54-column-stochastic-matrix" class="headerLink">
+    <a href="#54-column-stochastic-matrix" class="header-mark"></a>5.4 Column stochastic matrix</h3><p>ㅤPageRank의 수렴을 보장하기 위해 column stochastic matrix가 필요합니다. 따라서, $H$를 column stochastic matrix인 $M$으로 만들어줍니다. column stochastic matrix를 만들어줌으로, <strong>dead end 문제가 해결</strong>됩니다.</p>
+<div class="details admonition note open">
+        <div class="details-summary admonition-title">
+            <i class="icon fas fa-pencil-alt fa-fw"></i>Column stochastic matrix<i class="details-icon fas fa-angle-right fa-fw"></i>
+        </div>
+        <div class="details-content">
+            <div class="admonition-content"><ul>
+<li>column stochastic matrix는
+<ul>
+<li>matrix의 모든 값이 음수가 아닙니다.</li>
+<li>각 column의 합이 1입니다.</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+    </div>
+<br>
+<p>ㅤ[그림 7]의 column stochastic matrix인 $M$은 아래와 같습니다.</p>
+<p>$$
+M =
+\begin{bmatrix}
+0 &amp; 0 &amp; 0 &amp; \color{red}{\frac{1}{4}} \\\
+\frac{1}{2} &amp; 0 &amp; 1 &amp; \color{red}{\frac{1}{4}} \\\
+0 &amp; 1 &amp; 0 &amp; \color{red}{\frac{1}{4}} \\\
+\frac{1}{2} &amp; 0 &amp; 0 &amp; \color{red}{\frac{1}{4}}
+\end{bmatrix}
+$$</p>
+<h3 id="55-google-matrix" class="headerLink">
+    <a href="#55-google-matrix" class="header-mark"></a>5.5 Google matrix</h3><p>ㅤ$M$을 이용하여, PageRank를 구하는 Google matrix $G$ 구합니다. <strong>spider trap 문제는 teleport를 도입함으로써 해결</strong>됩니다.</p>
+<p>ㅤ$\alpha$는 보통  $[0.8,\ 0.9]$ 정도를 사용합니다.</p>
+<br>
+<p>ㅤ[그림 7]의 Google matrix $G$는 아래와 같습니다.</p>
+<p>$$
+G = \alpha
+\begin{bmatrix}
+0 &amp; 0 &amp; 0 &amp; {\frac{1}{4}} \\\
+\frac{1}{2} &amp; 0 &amp; 1 &amp; {\frac{1}{4}} \\\
+0 &amp; 1 &amp; 0 &amp; {\frac{1}{4}} \\\
+\frac{1}{2} &amp; 0 &amp; 0 &amp; {\frac{1}{4}}
+\end{bmatrix}
++
+(1-\alpha)
+\begin{bmatrix}
+\frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4} \\\
+\frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4} \\\
+\frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4} \\\
+\frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4} &amp; \frac{1}{4}
+\end{bmatrix}
+$$</p>
+<br>
+<p>ㅤ$\alpha = 0.8$로 설정하고, [그림 7]의 Google matrix $G$를 계산하면 아래와 같습니다.</p>
+<p>$$
+G =
+\begin{bmatrix}
+0.05 &amp; 0.05 &amp; 0.05 &amp; 0.25 \\\
+0.45 &amp; 0.05 &amp; 0.85 &amp; 0.25 \\\
+0.05 &amp; 0.85 &amp; 0.05 &amp; 0.25 \\\
+0.45 &amp; 0.05 &amp; 0.05 &amp; 0.25
+\end{bmatrix}
+$$</p>
+<h3 id="56-rrank-벡터" class="headerLink">
+    <a href="#56-rrank-%eb%b2%a1%ed%84%b0" class="header-mark"></a>5.6 Rrank 벡터</h3><p>ㅤpower iteration을 이용하여, $r = G \cdot r$ 식을 풀어, 최종 rank 벡터 $r$을 구할 수 있습니다.</p>
+<br>
+<p>ㅤ[그림 7]의 최종 rank 벡터 $r$은 아래와 같습니다.</p>
+<p>$$
+r
+\approx
+\begin{bmatrix}
+0.07 \\\
+0.42 \\\
+0.41 \\\
+0.10
+\end{bmatrix}
+$$</p>
+<figure><a class="lightgallery" href="./Fig_07_rank_calc.png" title="./Fig_07_rank_calc.png" data-thumbnail="./Fig_07_rank_calc.png" data-sub-html="<h2>[그림 7] Spider trap과 Dead end가 모두 있는 웹 그래프</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_07_rank_calc.png"
+            srcset="./Fig_07_rank_calc.png, ./Fig_07_rank_calc.png 1.5x, ./Fig_07_rank_calc.png 2x"
+            sizes="auto"
+            alt="./Fig_07_rank_calc.png"width="350px">
+    </a><figcaption class="image-caption">[그림 7] Spider trap과 Dead end가 모두 있는 웹 그래프</figcaption>
+    </figure>
+<hr>
+<h2 id="6-논문의-결론" class="headerLink">
+    <a href="#6-%eb%85%bc%eb%ac%b8%ec%9d%98-%ea%b2%b0%eb%a1%a0" class="header-mark"></a>6 논문의 결론</h2><p>ㅤ논문에서는 PageRank가 매우 큰 데이터에서도 매우 잘 확장될 것임을 시사했습니다. [그림 8]에서 이 내용을 확인할 수 있습니다.</p>
+<figure><a class="lightgallery" href="./Fig_08_convergence.png" title="./Fig_08_convergence.png" data-thumbnail="./Fig_08_convergence.png" data-sub-html="<h2>[그림 8] Rates of convergence출처: The PageRank Citation Ranking Bringing Order to the Web (1998)</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_08_convergence.png"
+            srcset="./Fig_08_convergence.png, ./Fig_08_convergence.png 1.5x, ./Fig_08_convergence.png 2x"
+            sizes="auto"
+            alt="./Fig_08_convergence.png"width="500px">
+    </a><figcaption class="image-caption">[그림 8] Rates of convergence<br>출처: <a href="http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf" target="_blank" rel="noopener noreferrer">The PageRank Citation Ranking Bringing Order to the Web (1998)</a></figcaption>
+    </figure>
+<ul>
+<li>3억 2,200만 개의 edge → 52번의 iteration을 통해 수렴</li>
+<li>1억 6,100만 개의 edge → 45번의 iteration을 통해 수렴</li>
+</ul>
+<hr>
+<h2 id="7-질문" class="headerLink">
+    <a href="#7-%ec%a7%88%eb%ac%b8" class="header-mark"></a>7 질문</h2><h3 id="71-구글은-지금도-pagerank를-사용할까" class="headerLink">
+    <a href="#71-%ea%b5%ac%ea%b8%80%ec%9d%80-%ec%a7%80%ea%b8%88%eb%8f%84-pagerank%eb%a5%bc-%ec%82%ac%ec%9a%a9%ed%95%a0%ea%b9%8c" class="header-mark"></a>7.1 구글은 지금도 PageRank를 사용할까?</h3><p>ㅤPageRank 논문은 1998년에 나왔지만, 구글은 현재도 검색 엔진의 품질 향상을 위해 PageRank를 사용하는 것으로 알려져 있습니다.</p>
+<figure><a class="lightgallery" href="./Fig_09_tweet.png" title="./Fig_09_tweet.png" data-thumbnail="./Fig_09_tweet.png" data-sub-html="<h2>[그림 9]출처: 구글의 Search Advocate, John의 트위터</h2>">
+        <img
+            
+            loading="lazy"
+            src="./Fig_09_tweet.png"
+            srcset="./Fig_09_tweet.png, ./Fig_09_tweet.png 1.5x, ./Fig_09_tweet.png 2x"
+            sizes="auto"
+            alt="./Fig_09_tweet.png"width="450px">
+    </a><figcaption class="image-caption">[그림 9]<br>출처: 구글의 Search Advocate, John의 트위터</figcaption>
+    </figure>
+<hr>
+<h2 id="8-reference" class="headerLink">
+    <a href="#8-reference" class="header-mark"></a>8 Reference</h2><ul>
+<li><a href="http://web.stanford.edu/class/cs224w/slides/04-pagerank.pdf" target="_blank" rel="noopener noreferrer">Stanford University - CS224W 4. Link Analysis: PageRank</a></li>
+<li><a href="https://www.boostcourse.org/ai211" target="_blank" rel="noopener noreferrer">boostcourse - 그래프와 추천 시스템</a></li>
+<li><a href="https://youtu.be/2CWnZfBSj0Q" target="_blank" rel="noopener noreferrer">고려대학교 산업경영공학부 DSBA 연구실 - [Paper Review] The PageRank Citation Ranking: Bringing Order to the Web</a></li>
+</ul></div>
+
+        
+
+<div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2023-03-01</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span><a class="link-to-mardown" href=/blog/paper-pagerank/index.md target="_blank" rel="noopener noreferrer">Read markdown</a>
+                    </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/blog/tags/graph/">Graph</a>,&nbsp;<a href="/blog/tags/computer-science/">Computer Science</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/blog/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"></div>
+</div>
+<div id="comments"><div id="utterances"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">Utterances</a>.
+            </noscript></div></article></div>
+        </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2023</span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+            <div class="footer-line"></div>
+            <div class="footer-line">
+            </div>
+        </div></footer></div>
+
+    <div id="fixed-buttons"><a href="#back-to-top" id="back-to-top-button" class="fixed-button" title="Back to Top">
+            <i class="fas fa-arrow-up fa-fw"></i>
+        </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+            <i class="fas fa-comment fa-fw"></i>
+        </a>
+    </div><div class="assets"><link rel="stylesheet" href="/blog/lib/katex/katex.min.css"><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="/blog/lib/katex/copy-tex.min.css">
+        <noscript><link rel="stylesheet" href="/blog/lib/katex/copy-tex.min.css"></noscript><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":10},"comment":{"utterances":{"darkTheme":"github-dark","issueTerm":"pathname","label":"","lightTheme":"github-light","repo":"acejune/blog-comment"}},"data":{"desktop-header-typeit":"june.log","mobile-header-typeit":"june.log"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/blog/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":true,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"No results found","snippetLength":300,"threshold":0.1,"type":"fuse","useExtendedSearch":false},"table":{"sort":true},"typeit":{"cursorChar":"|","cursorSpeed":1000,"data":{"desktop-header-typeit":["desktop-header-typeit"],"mobile-header-typeit":["mobile-header-typeit"]},"duration":-1,"speed":100}};</script><script type="text/javascript" src="/blog/js/utterances.min.js" defer></script><script type="text/javascript" src="/blog/lib/tablesort/tablesort.min.js"></script><script type="text/javascript" src="/blog/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/blog/lib/typeit/typeit.min.js"></script><script type="text/javascript" src="/blog/lib/katex/katex.min.js" defer></script><script type="text/javascript" src="/blog/lib/katex/auto-render.min.js" defer></script><script type="text/javascript" src="/blog/lib/katex/copy-tex.min.js" defer></script><script type="text/javascript" src="/blog/lib/katex/mhchem.min.js" defer></script><script type="text/javascript" src="/blog/js/katex.min.js" defer></script><script type="text/javascript" src="/blog/js/theme.min.js" defer></script><script type="text/javascript">
+            window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());
+            gtag('config', 'G-WZ6YNQXK01', { 'anonymize_ip': true });
+        </script><script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-WZ6YNQXK01" async></script></div>
+</body>
+
+</html>
